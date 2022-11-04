@@ -17,14 +17,14 @@ body {
     padding: 8px;
     flex-shrink: 0;
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
+    grid-template-columns: repeat(20, 1fr);
 }
 
 .screen_wrapper{
-    grid-column: 5;
     display: flex;
     align-items: center;
     justify-content: center;
+    grid-column: span 20;
 }
 
 .screen {
@@ -36,6 +36,14 @@ body {
     width: 90%;
 }
 
-.calculator > * {
+.grid-span-2 {
     grid-column: span 10;
+}
+
+.grid-span-4 {
+    grid-column: span 5; 
+}
+
+.grid-span-5 {
+    grid-column: span 4;
 }
