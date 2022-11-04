@@ -17,7 +17,7 @@ body {
     padding: 8px;
     flex-shrink: 0;
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(10, 1fr);
 }
 
 .screen_wrapper{
@@ -37,5 +37,5 @@ body {
 }
 
 .calculator > * {
-    grid-column: span 5;
+    grid-column: span 10;
 }
