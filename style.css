@@ -58,7 +58,10 @@ button:active {
     flex-direction: column;
 }
 
-
+#top-output, #bottom-output {
+    font-size: 36px;
+    margin-right: 18px;
+}
 
 .grid-span-2 {
     grid-column: span 10;
