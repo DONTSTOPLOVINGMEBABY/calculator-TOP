@@ -11,6 +11,7 @@ const operators = document.querySelectorAll('.operators')
 const decimal = document.getElementById("decimal");
 const compute = document.getElementById("compute");
 const pi = document.getElementById("pi");
+const deleteButton = document.getElementById("delete");
 
 
 function add      (x, y) {return x + y ;}
@@ -57,8 +58,9 @@ operators.forEach( (operator) => {
         if (number_string.length == 0){return}
         if (pi_button) {
             number_string = `${parseFloat(number_string) * Math.PI}`;
-            pi_button_off(); 
+            pi_button_off(no_slice=true);
         }
+        console.log(number_string);
         if (running_list.length == 0){
             running_list.push(operator.textContent, parseFloat(number_string));
             top_output.textContent = `${running_list[1]} ${running_list[0]}`;
@@ -107,19 +109,19 @@ decimal.addEventListener('click', () => {
 
 //equal-sign listener 
 compute.addEventListener('click', () => {
-    console.log(running_list)
-    if (running_list.length == 0) {  
-        if (pi_button == true) {
-            if (number_string.length == 0) {number_string = '0'};
-            let pi_compute = parseFloat(number_string) * Math.PI;
-            number_string = '';
-            bottom_output.textContent = `${pi_compute}`;
-            pi_button_off(no_slice=true);
-            return; 
-        }
-        return;
+    if (running_list.length == 0) {
+        if (pi_button){
+        if (number_string.length == 0) {pi_button_off();return;}
+        number_string = `${parseFloat(number_string) * Math.PI}`;
+        bottom_output.textContent = number_string;
+        pi_button_off(no_slice=true);
+        }  
+        return; }
+    if (pi_button) {
+        number_string = `${parseFloat(number_string) * Math.PI}`;
+        pi_button_off(no_slice=true);
     }
-    else if (number_string.length == 0) {running_list.push(0)}
+    if (number_string.length == 0) {running_list.push(0)}
     else {running_list.push(parseFloat(number_string))}
     running_total = operate(running_list.shift(), running_list.shift(), running_list.shift());
     bottom_output.textContent = `${running_total}`;
@@ -129,17 +131,22 @@ compute.addEventListener('click', () => {
 })
 
 
+//pi button listener
 pi.addEventListener('click', () => {
     if (!pi_button) { pi_button_on() }
     else { pi_button_off() }
 })
 
 
-/* 
-    1. Switch trig and special functions column. 
-
-    2. Remove lognx and replace with a negative symbol. 
-
-    3. Fix the pi equal-signs dilemma. 
-
-*/ 
+//delete button listener 
+deleteButton.addEventListener('click', () => {
+    if (number_string.length > 1){
+        number_string = number_string.slice(0,-1);
+        bottom_output.textContent = number_string;
+    }
+    else if (number_string.length == 1) {
+        number_string = '';
+        bottom_output.textContent = 0 ; 
+    }
+    return;
+})
