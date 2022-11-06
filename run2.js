@@ -13,7 +13,7 @@ const decimal = document.getElementById("decimal");
 const compute = document.getElementById("compute");
 const pi = document.getElementById("pi");
 const deleteButton = document.getElementById("delete");
-const sec_cos = document.getElementById("sec-csc");
+const sec_csc = document.getElementById("sec-csc");
 const sin_cos = document.getElementById("sin-cos");
 const tan_cot = document.getElementById("tan-cot"); 
 const trig_functions = document.querySelectorAll('.trig');
@@ -24,6 +24,7 @@ function multiply (x, y) {return x * y ;}
 function subtract (x, y) {return x - y ;}
 function divide   (x, y) {return x/y ;}
 
+
 function operate (operator, x, y) {
     if (operator == '+') {return add(x, y)}
     else if (operator == 'x') {return multiply(x, y)}
@@ -31,10 +32,12 @@ function operate (operator, x, y) {
     else {return divide(x, y)}
 }
 
+
 function clear_bottom_screen () { 
     number_string = '';
     bottom_output.textContent = '0';
 }
+
 
 function pi_button_on () {
     pi.style.borderColor = "yellow";
@@ -42,20 +45,30 @@ function pi_button_on () {
     pi_button = !pi_button ; 
 }
 
+
 function pi_button_off (no_slice=false) {
     pi.style.borderColor = "black";
     if (!no_slice) {bottom_output.textContent = bottom_output.textContent.slice(0, -1)}
     pi_button = !pi_button ; 
 }
 
+
 function activate_trig_function (trig_function) {
     number_string = `${trig_function}(${number_string})`;
     bottom_output.textContent = number_string ; 
 }
 
+
 function deactivate_trig_function () {
     number_string = number_string.slice(4, -1) ; 
     bottom_output.textContent = number_string ; 
+}
+
+
+function reset_all_trig_buttons () {
+    trig_functions.forEach( trig => {
+        trig.style.borderColor = 'black';
+    })
 }
 
 function adjust_trig_map (list) {
@@ -78,18 +91,34 @@ function adjust_trig_map (list) {
         if (trig_map[element] == 1 && element == second_element){
             trig_map[second_element] = 0 ; 
             no_match = false; 
+            reset_all_trig_buttons();
             break ; 
         }
     }
     if (no_match){
+        reset_all_trig_buttons();
         trig_map[first_element] = 1; 
     }
-    console.table(trig_map);
 }
 
 
-function update_trig_button {
-
+function update_trig_button () {
+    let translate_elements = {
+        sin: sin_cos, cos: sin_cos, 
+        sec: sec_csc, csc: sec_csc, 
+        tan: tan_cot, cot: tan_cot
+     }
+    let allFalse = true;
+    for (const element in trig_map) {
+        if (trig_map[element] == 1 && (element == 'sin' || element == 'sec' || element == 'tan')){
+            translate_elements[element].style.borderColor = 'yellow'; 
+            allFalse = false; 
+        }
+        if (trig_map[element] == 1 && (element == 'cos' || element == 'csc' || element == 'cot')){
+            translate_elements[element].style.borderColor = 'purple'; 
+            allFalse = false;
+        }
+    }
 }
 
 
@@ -104,6 +133,7 @@ trig_functions.forEach(trig => {
         string = string.slice(0 ,-1) 
         string = string.split('(');
         adjust_trig_map(string);
+        update_trig_button();
     })
 })
 
