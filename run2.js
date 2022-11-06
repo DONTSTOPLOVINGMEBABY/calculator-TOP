@@ -2,6 +2,7 @@ let running_list = [];
 let running_total = 0;
 let number_string = '';
 let pi_button = false; 
+let trig_map = {sin: 0, cos: 0, sec: 0, csc: 1, tan: 0, cot: 0}; 
 
 
 const top_output = document.getElementById("top-output");
@@ -12,6 +13,10 @@ const decimal = document.getElementById("decimal");
 const compute = document.getElementById("compute");
 const pi = document.getElementById("pi");
 const deleteButton = document.getElementById("delete");
+const sec_cos = document.getElementById("sec-csc");
+const sin_cos = document.getElementById("sin-cos");
+const tan_cot = document.getElementById("tan-cot"); 
+const trig_functions = document.querySelectorAll('.trig');
 
 
 function add      (x, y) {return x + y ;}
@@ -43,6 +48,67 @@ function pi_button_off (no_slice=false) {
     pi_button = !pi_button ; 
 }
 
+function activate_trig_function (trig_function) {
+    number_string = `${trig_function}(${number_string})`;
+    bottom_output.textContent = number_string ; 
+}
+
+function deactivate_trig_function () {
+    number_string = number_string.slice(4, -1) ; 
+    bottom_output.textContent = number_string ; 
+}
+
+function adjust_trig_map (list) {
+    let no_match = true ; 
+    let first_element = list[0];
+    let second_element = list[1];
+    for (const element in trig_map){
+        if ((trig_map[element] == 1) && (element != first_element) && (element != second_element)){
+            trig_map[element] = 0 ; 
+            trig_map[first_element] = 1 ; 
+            no_match = false; 
+            break;
+        }
+        if (trig_map[element] == 1 && element == first_element){
+            trig_map[first_element] = 0 ;
+            trig_map[second_element] = 1 ;
+            no_match = false;
+            break ; 
+        }
+        if (trig_map[element] == 1 && element == second_element){
+            trig_map[second_element] = 0 ; 
+            no_match = false; 
+            break ; 
+        }
+    }
+    if (no_match){
+        trig_map[first_element] = 1; 
+    }
+    console.table(trig_map);
+}
+
+
+function update_trig_button {
+
+}
+
+
+
+
+
+
+trig_functions.forEach(trig => {
+    trig.addEventListener('click', () => {
+        //split string and pass list to handler function to adjust trig_map
+        let string = trig.textContent;
+        string = string.slice(0 ,-1) 
+        string = string.split('(');
+        adjust_trig_map(string);
+    })
+})
+
+
+
 
 
 
@@ -69,7 +135,6 @@ operators.forEach( (operator) => {
         }
         else{
             running_list.push(parseFloat(number_string), operator.textContent);
-            console.log("Hello", running_list);
             running_total = operate(running_list.shift(), running_list.shift(), running_list.shift());
             running_list.push(running_total);
             top_output.textContent = `${running_total} ${running_list[0]}`;
