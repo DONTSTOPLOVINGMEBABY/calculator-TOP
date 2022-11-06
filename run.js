@@ -48,7 +48,7 @@ function operate (operator, x, y){
     else if (operator == 'x'){return multiply(x, y)}
     else if (operator == '-'){return subtract(x, y)}
     else {return divide(x, y)}
-};
+}
 
 
 
