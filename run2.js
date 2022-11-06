@@ -1,6 +1,7 @@
 let running_list = [];
 let running_total = 0;
 let number_string = '';
+let pi_button = false; 
 
 
 const top_output = document.getElementById("top-output");
@@ -9,17 +10,18 @@ const numbers = document.querySelectorAll('.number');
 const operators = document.querySelectorAll('.operators')
 const decimal = document.getElementById("decimal");
 const compute = document.getElementById("compute");
+const pi = document.getElementById("pi");
 
 
-function add (x, y)      {return x + y ;}
+function add      (x, y) {return x + y ;}
 function multiply (x, y) {return x * y ;}
 function subtract (x, y) {return x - y ;}
-function divide (x, y)   {return x/y ;}
+function divide   (x, y) {return x/y ;}
 
 function operate (operator, x, y) {
     if (operator == '+') {return add(x, y)}
-    else if (operator == 'x'){return multiply(x, y)}
-    else if (operator == '-'){return subtract(x, y)}
+    else if (operator == 'x') {return multiply(x, y)}
+    else if (operator == '-') {return subtract(x, y)}
     else {return divide(x, y)}
 }
 
@@ -28,11 +30,17 @@ function clear_bottom_screen () {
     bottom_output.textContent = '0';
 }
 
+function pi_button_on () {
+    pi.style.borderColor = "yellow";
+    bottom_output.textContent += '\u03C0';
+    pi_button = !pi_button ; 
+}
 
-
-
-
-
+function pi_button_off (no_slice=false) {
+    pi.style.borderColor = "black";
+    if (!no_slice) {bottom_output.textContent = bottom_output.textContent.slice(0, -1)}
+    pi_button = !pi_button ; 
+}
 
 
 
@@ -47,6 +55,10 @@ function clear_bottom_screen () {
 operators.forEach( (operator) => {
     operator.addEventListener('click', () => {
         if (number_string.length == 0){return}
+        if (pi_button) {
+            number_string = `${parseFloat(number_string) * Math.PI}`;
+            pi_button_off(); 
+        }
         if (running_list.length == 0){
             running_list.push(operator.textContent, parseFloat(number_string));
             top_output.textContent = `${running_list[1]} ${running_list[0]}`;
@@ -95,30 +107,39 @@ decimal.addEventListener('click', () => {
 
 //equal-sign listener 
 compute.addEventListener('click', () => {
-    if (number_string.length == 0) {running_list.push(0)}
+    console.log(running_list)
+    if (running_list.length == 0) {  
+        if (pi_button == true) {
+            if (number_string.length == 0) {number_string = '0'};
+            let pi_compute = parseFloat(number_string) * Math.PI;
+            number_string = '';
+            bottom_output.textContent = `${pi_compute}`;
+            pi_button_off(no_slice=true);
+            return; 
+        }
+        return;
+    }
+    else if (number_string.length == 0) {running_list.push(0)}
     else {running_list.push(parseFloat(number_string))}
     running_total = operate(running_list.shift(), running_list.shift(), running_list.shift());
     bottom_output.textContent = `${running_total}`;
     top_output.style.color = '#FCFFAD'
     number_string = `${running_total}`;
+    if (number_string == '0') {number_string = ''}
 })
 
 
+pi.addEventListener('click', () => {
+    if (!pi_button) { pi_button_on() }
+    else { pi_button_off() }
+})
+
 
 /* 
-    1. Need to type a number and then hit an operator and then
-    type another operator and have that compute
-    2. The top output needs to be displayed every time an operation 
-    is completed or the first time an operator is applied 
+    1. Switch trig and special functions column. 
 
-    ** What to do when an operator is applied **
-    1. Store original number into list, then store operator to list. 
-    2. Output interim result to top-output and final result to bottom-
-    ouput. 
-    3. If an operation has already been peformed, then put the most updated
-    result to the top screen and append it to the end of the list. 
-        - The next operator and operand selected will then be applied to
-        the most recent element. 
-        - 
-    
+    2. Remove lognx and replace with a negative symbol. 
+
+    3. Fix the pi equal-signs dilemma. 
+
 */ 
