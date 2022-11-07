@@ -78,10 +78,14 @@ function add_trig_styling () {
 }
 
 
-function remove_trig_styling (setstyle=false) {
+function remove_trig_styling (reset=false) {
     number_string = number_string.slice(4, -1) ; 
     bottom_output.textContent = number_string ; 
-    styling = setstyle;
+    styling = false;
+    if (reset) {
+        trig_map = {sin: 0, cos: 0, sec: 0, csc: 0, tan: 0, cot: 0};
+        reset_all_trig_buttons();
+    }
     console.table(trig_map);
 }
 
@@ -279,9 +283,8 @@ compute.addEventListener('click', () => {
         pi_button_off(no_slice=true);
     }
     if (trig_button_active){
-        remove_trig_styling();
+        remove_trig_styling(true);
         number_string = calculate_trig(number_string);
-        bottom_output.textContent = number_string ; 
     }
     if (number_string.length == 0) {running_list.push(0)}
     else {running_list.push(parseFloat(number_string))}
