@@ -2,7 +2,9 @@ let running_list = [];
 let running_total = 0;
 let number_string = '';
 let pi_button = false; 
-let trig_map = {sin: 0, cos: 0, sec: 0, csc: 1, tan: 0, cot: 0}; 
+let trig_map = {sin: 0, cos: 0, sec: 0, csc: 0, tan: 0, cot: 0};
+let trig_button_active = false;  
+let styling = false;  
 
 
 const top_output = document.getElementById("top-output");
@@ -53,15 +55,34 @@ function pi_button_off (no_slice=false) {
 }
 
 
-function activate_trig_function (trig_function) {
+function add_trig_styling () {
+    if (trig_button_active && !styling){
+    let trig_function = find_active_button();
     number_string = `${trig_function}(${number_string})`;
-    bottom_output.textContent = number_string ; 
+    bottom_output.textContent = number_string ;
+    styling = true;
+    }
+    else if (trig_button_active && styling) {
+        remove_trig_styling();
+        styling = true;
+        let trig_function = find_active_button();
+        number_string = `${trig_function}(${number_string})`;
+        bottom_output.textContent = number_string ;
+    }
+    else{
+        remove_trig_styling()
+        bottom_output.textContent = '0';
+        number_string = '';
+        console.log(number_string);}
+
 }
 
 
-function deactivate_trig_function () {
+function remove_trig_styling (setstyle=false) {
     number_string = number_string.slice(4, -1) ; 
     bottom_output.textContent = number_string ; 
+    styling = setstyle;
+    console.table(trig_map);
 }
 
 
@@ -69,6 +90,14 @@ function reset_all_trig_buttons () {
     trig_functions.forEach( trig => {
         trig.style.borderColor = 'black';
     })
+}
+
+function find_active_button () {
+    for (const object in trig_map){
+        if (trig_map[object] == 1) {
+            return object ;
+        }
+    }
 }
 
 function adjust_trig_map (list) {
@@ -80,25 +109,29 @@ function adjust_trig_map (list) {
             trig_map[element] = 0 ; 
             trig_map[first_element] = 1 ; 
             no_match = false; 
+            trig_button_active = true; 
             break;
         }
         if (trig_map[element] == 1 && element == first_element){
             trig_map[first_element] = 0 ;
             trig_map[second_element] = 1 ;
             no_match = false;
+            trig_button_active = true; 
             break ; 
         }
         if (trig_map[element] == 1 && element == second_element){
             trig_map[second_element] = 0 ; 
             no_match = false; 
-            reset_all_trig_buttons();
+            trig_button_active = false; 
             break ; 
         }
     }
     if (no_match){
-        reset_all_trig_buttons();
         trig_map[first_element] = 1; 
+        trig_button_active = true; 
     }
+    reset_all_trig_buttons();
+    console.log(trig_button_active);
 }
 
 
@@ -122,6 +155,16 @@ function update_trig_button () {
 }
 
 
+function calculate_trig(string) {
+    if (find_active_button() == 'sin') {return `${Math.sin(parseFloat(string))}`}
+    if (find_active_button() == 'cos') {return `${Math.cos(parseFloat(string))}`}
+    if (find_active_button() == 'sec') {return `${1/Math.cos(parseFloat(string))}`}
+    if (find_active_button() == 'csc') {return `${1/Math.sin(parseFloat(string))}`}
+    if (find_active_button() == 'tan') {return `${Math.sin(parseFloat(string))/Math.cos(parseFloat(string))}`}
+    if (find_active_button() == 'cot') {return `${Math.cos(parseFloat(string))/Math.sin(parseFloat(string))}`}
+}
+
+
 
 
 
@@ -134,8 +177,14 @@ trig_functions.forEach(trig => {
         string = string.split('(');
         adjust_trig_map(string);
         update_trig_button();
+        add_trig_styling();
     })
 })
+
+
+
+
+
 
 
 
@@ -178,10 +227,17 @@ operators.forEach( (operator) => {
 //listener for numbers 0-9
 numbers.forEach((number) => {
     number.addEventListener('click', () => {
-        if (number_string.length == 0 && number.textContent == 0){
+        console.log(number_string);
+        console.log(styling)
+        if (number_string.length == 0 && number.textContent == 0 && styling == false){
             bottom_output.textContent = number.textContent;}
         else {
-            number_string += number.textContent;
+            if (styling) {
+                remove_trig_styling();
+                number_string += number.textContent ; 
+                add_trig_styling();
+            }
+            else{number_string += number.textContent;}
             bottom_output.textContent = number_string;
         }
     })
@@ -202,6 +258,7 @@ decimal.addEventListener('click', () => {
 })
 
 
+
 //equal-sign listener 
 compute.addEventListener('click', () => {
     if (running_list.length == 0) {
@@ -211,10 +268,20 @@ compute.addEventListener('click', () => {
         bottom_output.textContent = number_string;
         pi_button_off(no_slice=true);
         }  
+        if (trig_button_active){
+            remove_trig_styling();
+            number_string = calculate_trig(number_string);
+            bottom_output.textContent = number_string ; 
+        }
         return; }
     if (pi_button) {
         number_string = `${parseFloat(number_string) * Math.PI}`;
         pi_button_off(no_slice=true);
+    }
+    if (trig_button_active){
+        remove_trig_styling();
+        number_string = calculate_trig(number_string);
+        bottom_output.textContent = number_string ; 
     }
     if (number_string.length == 0) {running_list.push(0)}
     else {running_list.push(parseFloat(number_string))}
